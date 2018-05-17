@@ -21,10 +21,12 @@ import (
 )
 
 type NetworkInfo struct {
-	PublicAddr     string
-	ClusterAddr    string
-	PublicNetwork  string // public network and subnet mask in CIDR notation
-	ClusterNetwork string // cluster network and subnet mask in CIDR notation
+	PublicAddr      string
+	ClusterAddr     string
+	PublicAddrIPv4  string // deprecated. use PublicAddr instead
+	ClusterAddrIPv4 string // deprecated. use ClusterAddr instead
+	PublicNetwork   string // public network and subnet mask in CIDR notation
+	ClusterNetwork  string // cluster network and subnet mask in CIDR notation
 }
 
 func VerifyNetworkInfo(networkInfo NetworkInfo) error {
@@ -68,4 +70,24 @@ func verifyIPNetwork(network string) error {
 
 	_, _, err := net.ParseCIDR(network)
 	return err
+}
+
+func RemoveDeprecatedFields(networkInfo NetworkInfo) NetworkInfo {
+	out := NetworkInfo{
+		PublicNetwork:  networkInfo.PublicNetwork,
+		ClusterNetwork: networkInfo.ClusterNetwork,
+	}
+	if networkInfo.PublicAddr == "" {
+		out.PublicAddr = networkInfo.PublicAddrIPv4
+	} else {
+		out.PublicAddr = networkInfo.PublicAddr
+	}
+
+	if networkInfo.ClusterAddr == "" {
+		out.ClusterAddr = networkInfo.ClusterAddrIPv4
+	} else {
+		out.ClusterAddr = networkInfo.ClusterAddr
+	}
+
+	return out
 }
