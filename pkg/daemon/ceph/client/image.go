@@ -99,7 +99,7 @@ func DeleteImage(context *clusterd.Context, clusterName, name, poolName string) 
 	args := []string{"rm", "--no-progress", imageSpec}
 	buf, err := ExecuteRBDCommandNoFormat(context, clusterName, args)
 	if err != nil {
-		if strings.HasSuffix(err.Error(), "No such file or directory") {
+		if strings.HasSuffix(strings.TrimSpace(err.Error()), "No such file or directory") {
 			fmt.Println("FUCK ", err)
 			return nil
 		}
