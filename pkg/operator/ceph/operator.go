@@ -38,7 +38,6 @@ import (
 	"github.com/rook/rook/pkg/operator/ceph/pool"
 	"github.com/rook/rook/pkg/operator/ceph/provisioner"
 	"github.com/rook/rook/pkg/operator/ceph/provisioner/controller"
-	"github.com/rook/rook/pkg/operator/discover"
 	"github.com/rook/rook/pkg/operator/k8sutil"
 	"k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -118,10 +117,10 @@ func (o *Operator) Run() error {
 		return fmt.Errorf("Error starting agent daemonset: %v", err)
 	}
 
-	rookDiscover := discover.New(o.context.Clientset)
-	if err := rookDiscover.Start(namespace, o.rookImage, o.securityAccount); err != nil {
-		return fmt.Errorf("Error starting device discovery daemonset: %v", err)
-	}
+	// rookDiscover := discover.New(o.context.Clientset)
+	// if err := rookDiscover.Start(namespace, o.rookImage, o.securityAccount); err != nil {
+	// 	return fmt.Errorf("Error starting device discovery daemonset: %v", err)
+	// }
 
 	signalChan := make(chan os.Signal, 1)
 	stopChan := make(chan struct{})

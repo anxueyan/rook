@@ -18,6 +18,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"strconv"
 
@@ -98,19 +99,14 @@ func DeleteImage(context *clusterd.Context, clusterName, name, poolName string) 
 	args := []string{"rm", "--no-progress", imageSpec}
 	buf, err := ExecuteRBDCommandNoFormat(context, clusterName, args)
 	if err != nil {
-		StatusImage(context, clusterName, name, poolName)
+		if strings.HasSuffix(err.Error(), "No such file or directory") {
+			fmt.Println("FUCK ", err)
+			return nil
+		}
 		return fmt.Errorf("failed to delete image %s in pool %s: %+v. output: %s",
 			name, poolName, err, string(buf))
 	}
 
-	return nil
-}
-
-func StatusImage(context *clusterd.Context, clusterName, name, poolName string) error {
-	imageSpec := getImageSpec(name, poolName)
-	args := []string{"status", imageSpec}
-	buf, err := ExecuteRBDCommandNoFormat(context, clusterName, args)
-	fmt.Printf("XXX +%s XXX %+v\n", string(buf), err)
 	return nil
 }
 
